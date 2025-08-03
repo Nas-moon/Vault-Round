@@ -2,282 +2,146 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Vault Round</title>
+  <title>Vault Unlock Game</title>
   <style>
-    body {
-      background-color: #0c0c0c;
-      color: white;
-      font-family: 'Segoe UI', sans-serif;
-      margin: 0;
-      padding: 20px;
-      text-align: center;
-    }
-    h1 {
-      color: #00f3ff;
-    }
-    select, input[type="password"] {
-      padding: 10px;
-      margin: 10px;
-      border-radius: 8px;
-      font-size: 16px;
-      border: none;
-      width: 200px;
-      text-align: center;
-    }
-    button {
-      padding: 10px 20px;
-      background-color: #00f3ff;
-      border: none;
-      border-radius: 8px;
-      font-size: 16px;
-      color: #000;
-      cursor: pointer;
-      margin-top: 10px;
-    }
-    button:hover {
-      background-color: #00c2cc;
-    }
-    .vaults-container {
-      display: flex;
-      gap: 30px;
-      flex-wrap: wrap;
-      justify-content: center;
-      margin-top: 30px;
-    }
-    .vault-box {
-      background-color: #1c1c1c;
-      padding: 20px;
-      border-radius: 15px;
-      box-shadow: 0 0 10px #00f3ff;
-      width: 300px;
-    }
-    .message {
-      height: 22px;
-      margin-top: 10px;
-      font-size: 16px;
-    }
-    .scoreboard {
-      margin-top: 40px;
-      background-color: #1c1c1c;
-      padding: 20px;
-      border-radius: 15px;
-      width: 90%;
-      max-width: 800px;
-      margin-left: auto;
-      margin-right: auto;
-    }
-    .scoreboard h3 {
-      margin-bottom: 10px;
-      color: #00f3ff;
-    }
-    .scoreboard pre {
-      text-align: left;
-      background-color: #111;
-      padding: 10px;
-      border-radius: 10px;
-      overflow-x: auto;
-    }
-    .back-btn {
-      position: fixed;
-      top: 20px;
-      left: 20px;
-      background-color: #444;
-      color: white;
-      border: none;
-      padding: 8px 16px;
-      border-radius: 8px;
-      cursor: pointer;
-    }
-    .back-btn:hover {
-      background-color: #666;
-    }
+    body { font-family: Arial, sans-serif; text-align: center; background-color: #f0f0f0; }
+    .vault-container { display: flex; justify-content: center; gap: 30px; margin-top: 50px; }
+    .vault { padding: 20px; border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.2); width: 250px; background: white; }
+    .vault h2 { margin-bottom: 15px; }
+    input[type="text"] { padding: 10px; width: 80%; margin-bottom: 10px; border: 1px solid #ccc; border-radius: 5px; }
+    button { padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; margin-top: 5px; }
+    .scoreboard { margin-top: 40px; }
+    .back-btn { margin-top: 30px; display: inline-block; padding: 10px 15px; background: #555; color: white; border-radius: 5px; text-decoration: none; }
+    #scoreHistory { text-align: left; margin-top: 20px; max-width: 700px; margin-left: auto; margin-right: auto; background: #fff; padding: 20px; border-radius: 10px; }
   </style>
 </head>
 <body>
-  <button class="back-btn" onclick="goBack()">← Back</button>
-  <h1>🔐 Vault Challenge</h1>
+  <h1>🔐 The Vault Challenge 🔐</h1>
+  <label for="team-select">Select Your Team:</label>
+  <select id="team-select">
+    <option value="">--Choose--</option>
+    <option value="team1">Team Alpha</option>
+    <option value="team2">Team Beta</option>
+    <option value="team3">Team Gamma</option>
+    <option value="team4">Team Delta</option>
+  </select>
 
-  <label for="teamSelector">Select Team:</label>
-  <select id="teamSelector" onchange="updateVaultStatus()"></select>
-
-  <div class="vaults-container">
-    <!-- RED Vault -->
-    <div class="vault-box" style="border-top: 4px solid red;">
-      <h2>🔴 Red Vault</h2>
-      <input type="password" id="input-red" maxlength="6" placeholder="●●●●●●" />
-      <br>
-      <button onclick="attemptVault('red')">Unlock</button>
-      <div class="message" id="message-red"></div>
+  <div class="vault-container">
+    <div class="vault" id="red-vault">
+      <h2 style="color: red">Red Vault</h2>
+      <input type="text" id="input-red" placeholder="Enter passcode">
+      <button id="unlock-btn-red" onclick="attemptVault('red')">Unlock</button>
+      <button id="try-again-red" onclick="tryAgain('red')" style="display:none;">Try Again</button>
+      <p id="message-red"></p>
     </div>
 
-    <!-- BLUE Vault -->
-    <div class="vault-box" style="border-top: 4px solid blue;">
-      <h2>🔵 Blue Vault</h2>
-      <input type="password" id="input-blue" maxlength="6" placeholder="●●●●●●" />
-      <br>
-      <button onclick="attemptVault('blue')">Unlock</button>
-      <div class="message" id="message-blue"></div>
+    <div class="vault" id="blue-vault">
+      <h2 style="color: blue">Blue Vault</h2>
+      <input type="text" id="input-blue" placeholder="Enter passcode">
+      <button id="unlock-btn-blue" onclick="attemptVault('blue')">Unlock</button>
+      <button id="try-again-blue" onclick="tryAgain('blue')" style="display:none;">Try Again</button>
+      <p id="message-blue"></p>
     </div>
 
-    <!-- YELLOW Vault -->
-    <div class="vault-box" style="border-top: 4px solid gold;">
-      <h2>🟡 Yellow Vault</h2>
-      <input type="password" id="input-yellow" maxlength="6" placeholder="●●●●●●" />
-      <br>
-      <button onclick="attemptVault('yellow')">Unlock</button>
-      <div class="message" id="message-yellow"></div>
+    <div class="vault" id="yellow-vault">
+      <h2 style="color: goldenrod">Yellow Vault</h2>
+      <input type="text" id="input-yellow" placeholder="Enter passcode">
+      <button id="unlock-btn-yellow" onclick="attemptVault('yellow')">Unlock</button>
+      <button id="try-again-yellow" onclick="tryAgain('yellow')" style="display:none;">Try Again</button>
+      <p id="message-yellow"></p>
     </div>
   </div>
 
   <div class="scoreboard">
-    <h3>📊 Vault Scoreboard</h3>
-    <pre id="scoreDisplay"></pre>
+    <h2>Scoreboard History</h2>
+    <div id="scoreHistory">No attempts yet.</div>
   </div>
-   <input type="text" id="input-a" placeholder="Enter Code">
-<button id="unlock-btn-a" onclick="attemptVault('a')">Unlock</button>
-<button id="try-again-a" onclick="tryAgain('a')" style="display:none;">Try Again</button>
-<p id="message-a"></p>
 
-  <input type="text" id="input-b" placeholder="Enter Code">
-<button id="unlock-btn-b" onclick="attemptVault('b')">Unlock</button>
-<button id="try-again-b" onclick="tryAgain('b')" style="display:none;">Try Again</button>
-<p id="message-b"></p>
-
-  <input type="text" id="input-c" placeholder="Enter Code">
-<button id="unlock-btn-c" onclick="attemptVault('c')">Unlock</button>
-<button id="try-again-c" onclick="tryAgain('c')" style="display:none;">Try Again</button>
-<p id="message-c"></p>
+  <a href="index.html" class="back-btn">⬅ Back</a>
 
   <script>
-    const correctCodes = {
-      red: "123456",
-      blue: "654321",
-      yellow: "112233"
-    };
+    const correctCodes = { red: "145", blue: "802", yellow: "376" };
+    const gameState = {};
+    const teamNames = ["--Choose--", "Team Alpha", "Team Beta", "Team Gamma", "Team Delta"];
 
-    let gameState = JSON.parse(localStorage.getItem("vaultGameState")) || {};
-    let teamNames = JSON.parse(localStorage.getItem("teamNames")) || [];
+    function attemptVault(vault) {
+      const inputField = document.getElementById(`input-${vault}`);
+      const input = inputField.value.trim();
+      const message = document.getElementById(`message-${vault}`);
+      const unlockBtn = document.getElementById(`unlock-btn-${vault}`);
+      const tryAgainBtn = document.getElementById(`try-again-${vault}`);
+      const selector = document.getElementById("team-select");
+      const teamKey = selector.value;
 
-    // Populate team dropdown
-    const selector = document.getElementById("teamSelector");
-    teamNames.forEach((name, index) => {
-      const opt = document.createElement("option");
-      opt.value = `team${index}`;
-      opt.textContent = name;
-      selector.appendChild(opt);
-    });
+      if (!teamKey) {
+        alert("Please select a team first.");
+        return;
+      }
 
-    function updateVaultStatus() {
-      ["red", "blue", "yellow"].forEach(vault => {
-        const teamKey = selector.value;
-        const attempts = gameState[teamKey]?.attempts[vault] ?? 3;
-        const unlocked = gameState[teamKey]?.unlocked[vault];
-        const msgBox = document.getElementById(`message-${vault}`);
+      if (!gameState[teamKey]) {
+        gameState[teamKey] = {
+          name: teamNames[selector.selectedIndex],
+          attempts: { red: 3, blue: 3, yellow: 3 },
+          unlocked: { red: false, blue: false, yellow: false },
+          history: []
+        };
+      }
 
-        if (unlocked) {
-          msgBox.style.color = "#00ff88";
-          msgBox.innerText = "✅ Vault already unlocked!";
-        } else {
-          msgBox.style.color = "yellow";
-          msgBox.innerText = `Attempts left: ${attempts}`;
-        }
-      });
+      const team = gameState[teamKey];
+
+      if (team.unlocked[vault]) {
+        message.textContent = "Vault already unlocked!";
+        return;
+      }
+
+      if (team.attempts[vault] <= 0) {
+        message.textContent = "No attempts left!";
+        return;
+      }
+
+      // disable unlock button briefly to avoid double-clicking
+      unlockBtn.disabled = true;
+      setTimeout(() => { unlockBtn.disabled = false; }, 1000);
+
+      if (input === correctCodes[vault]) {
+        message.textContent = "✅ Correct code! Vault unlocked.";
+        team.unlocked[vault] = true;
+        inputField.style.display = "none";
+        unlockBtn.style.display = "none";
+        tryAgainBtn.style.display = "none";
+      } else {
+        team.attempts[vault]--;
+        message.textContent = `❌ Wrong code. Attempts left: ${team.attempts[vault]}`;
+        inputField.style.display = "none";
+        unlockBtn.style.display = "none";
+        tryAgainBtn.style.display = "inline-block";
+      }
+
+      team.history.push(`${team.name} tried ${vault.toUpperCase()} Vault: ${input} ➜ ${input === correctCodes[vault] ? '✅' : '❌'}`);
       updateScoreboard();
     }
 
-    
-        function attemptVault(vault) {
-  const teamKey = selector.value;
-  const inputField = document.getElementById(`input-${vault}`);
-  const messageBox = document.getElementById(`message-${vault}`);
-  const unlockBtn = document.getElementById(`unlock-btn-${vault}`);
-  const tryAgainBtn = document.getElementById(`try-again-${vault}`);
-  const team = gameState[teamKey];
-  const input = inputField.value.trim();
-
-  if (team.unlocked[vault]) {
-    messageBox.style.color = "#00ff88";
-    messageBox.innerText = "✅ Already unlocked!";
-    return;
-  }
-
-  if (team.attempts[vault] <= 0) {
-    messageBox.style.color = "#ff4d4d";
-    messageBox.innerText = "🚫 No attempts left!";
-    return;
-  }
-
-  if (input === correctCodes[vault]) {
-    team.unlocked[vault] = true;
-    messageBox.style.color = "#00ff88";
-    messageBox.innerText = "✅ Vault unlocked!";
-    team.history.push(`✅ ${vault.toUpperCase()} Vault unlocked`);
-  } else {
-    team.attempts[vault] -= 1;
-    messageBox.style.color = "#ff4d4d";
-    messageBox.innerText = `❌ Incorrect! Attempts left: ${team.attempts[vault]}`;
-    team.history.push(`❌ Tried ${vault.toUpperCase()} Vault`);
-  }
-
-  inputField.value = "";
-  inputField.style.display = "none";
-  unlockBtn.style.display = "none";
-
-  // Show Try Again only if they have more attempts and haven’t unlocked
-  if (!team.unlocked[vault] && team.attempts[vault] > 0) {
-    tryAgainBtn.style.display = "inline-block";
-  }
-
-  localStorage.setItem("vaultGameState", JSON.stringify(gameState));
-  updateVaultStatus();
-}
-
     function tryAgain(vault) {
-  document.getElementById(`input-${vault}`).style.display = "inline-block";
-  document.getElementById(`unlock-btn-${vault}`).style.display = "inline-block";
-  document.getElementById(`try-again-${vault}`).style.display = "none";
-  document.getElementById(`message-${vault}`).innerText = "";
-}
-
-
-      if (input === correctCodes[vault]) {
-        team.unlocked[vault] = true;
-        messageBox.style.color = "#00ff88";
-        messageBox.innerText = "✅ Vault unlocked!";
-        team.history.push(`✅ ${vault.toUpperCase()} Vault unlocked`);
-      } else {
-        team.attempts[vault] -= 1;
-        messageBox.style.color = "#ff4d4d";
-        messageBox.innerText = `❌ Incorrect! Attempts left: ${team.attempts[vault]}`;
-        team.history.push(`❌ Tried ${vault.toUpperCase()} Vault`);
-      }
-
-      localStorage.setItem("vaultGameState", JSON.stringify(gameState));
-      updateVaultStatus();
+      document.getElementById(`input-${vault}`).style.display = "inline-block";
+      document.getElementById(`unlock-btn-${vault}`).style.display = "inline-block";
+      document.getElementById(`try-again-${vault}`).style.display = "none";
+      document.getElementById(`message-${vault}`).textContent = "";
     }
 
     function updateScoreboard() {
-      const display = document.getElementById("scoreDisplay");
-      display.textContent = "";
-
-      Object.keys(gameState).forEach(teamKey => {
+      const scoreDiv = document.getElementById("scoreHistory");
+      let historyHTML = "";
+      for (let teamKey in gameState) {
         const team = gameState[teamKey];
-        display.textContent += `\n🔸 ${team.name}:\n`;
-        ["red", "blue", "yellow"].forEach(vault => {
-          const status = team.unlocked[vault] ? "✅ Opened" : `❌ Not Opened (Attempts Left: ${team.attempts[vault]})`;
-          display.textContent += `  - ${vault.toUpperCase()} Vault: ${status}\n`;
-        });
-        display.textContent += `  History:\n    ${team.history.join("\n    ")}\n`;
-      });
-    }
-
-    function goBack() {
-      if (confirm("Go back to Team Setup? Game progress will be kept.")) {
-        window.location.href = "index.html";
+        historyHTML += `<h4>${team.name}</h4><ul>`;
+        for (let line of team.history) {
+          historyHTML += `<li>${line}</li>`;
+        }
+        historyHTML += `</ul>`;
       }
+      scoreDiv.innerHTML = historyHTML || "No attempts yet.";
     }
-
-    window.onload = updateVaultStatus;
   </script>
 </body>
 </html>
+
