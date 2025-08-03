@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Team Entry - Virtual Vault</title>
+  <style>
+    body {
+      background-color: #0c0c0c;
+      color: white;
+      font-family: 'Segoe UI', sans-serif;
+      text-align: center;
+      padding-top: 50px;
+    }
+    input[type="text"] {
+      padding: 10px;
+      margin: 10px;
+      width: 300px;
+      border-radius: 8px;
+      font-size: 16px;
+      border: none;
+    }
+    button {
+      padding: 10px 20px;
+      margin-top: 20px;
+      font-size: 18px;
+      border: none;
+      border-radius: 8px;
+      background-color: #00f3ff;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #00c2cc;
+    }
+  </style>
+</head>
+<body>
+  <h1>Enter Team Names</h1>
+  <div id="teamInputs">
+    <input type="text" id="team1" placeholder="Team 1 Name" required><br>
+    <input type="text" id="team2" placeholder="Team 2 Name" required><br>
+    <input type="text" id="team3" placeholder="Team 3 Name" required><br>
+    <input type="text" id="team4" placeholder="Team 4 Name" required><br>
+  </div>
+  <button onclick="startGame()">Start Vault Round</button>
+
+  <script>
+    function startGame() {
+      const teamNames = [
+        document.getElementById("team1").value.trim(),
+        document.getElementById("team2").value.trim(),
+        document.getElementById("team3").value.trim(),
+        document.getElementById("team4").value.trim()
+      ];
+
+      if (teamNames.some(name => name === "")) {
+        alert("Please fill all team names.");
+        return;
+      }
+
+      localStorage.setItem("teamNames", JSON.stringify(teamNames));
+
+      // Initialize game state
+      const state = {};
+      teamNames.forEach((name, index) => {
+        state[`team${index}`] = {
+          name,
+          attempts: {
+            red: 3,
+            blue: 3,
+            yellow: 3
+          },
+          unlocked: {
+            red: false,
+            blue: false,
+            yellow: false
+          },
+          history: []
+        };
+      });
+
+      localStorage.setItem("vaultGameState", JSON.stringify(state));
+      window.location.href = "vault.html";
+    }
+  </script>
+</body>
+</html>
