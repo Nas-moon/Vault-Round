@@ -133,6 +133,20 @@
     <h3>📊 Vault Scoreboard</h3>
     <pre id="scoreDisplay"></pre>
   </div>
+   <input type="text" id="input-a" placeholder="Enter Code">
+<button id="unlock-btn-a" onclick="attemptVault('a')">Unlock</button>
+<button id="try-again-a" onclick="tryAgain('a')" style="display:none;">Try Again</button>
+<p id="message-a"></p>
+
+  <input type="text" id="input-b" placeholder="Enter Code">
+<button id="unlock-btn-b" onclick="attemptVault('b')">Unlock</button>
+<button id="try-again-b" onclick="tryAgain('b')" style="display:none;">Try Again</button>
+<p id="message-b"></p>
+
+  <input type="text" id="input-c" placeholder="Enter Code">
+<button id="unlock-btn-c" onclick="attemptVault('c')">Unlock</button>
+<button id="try-again-c" onclick="tryAgain('c')" style="display:none;">Try Again</button>
+<p id="message-c"></p>
 
   <script>
     const correctCodes = {
@@ -171,24 +185,60 @@
       updateScoreboard();
     }
 
-    function attemptVault(vault) {
-      const teamKey = selector.value;
-      const input = document.getElementById(`input-${vault}`).value.trim();
-      const messageBox = document.getElementById(`message-${vault}`);
+    
+        function attemptVault(vault) {
+  const teamKey = selector.value;
+  const inputField = document.getElementById(`input-${vault}`);
+  const messageBox = document.getElementById(`message-${vault}`);
+  const unlockBtn = document.getElementById(`unlock-btn-${vault}`);
+  const tryAgainBtn = document.getElementById(`try-again-${vault}`);
+  const team = gameState[teamKey];
+  const input = inputField.value.trim();
 
-      const team = gameState[teamKey];
+  if (team.unlocked[vault]) {
+    messageBox.style.color = "#00ff88";
+    messageBox.innerText = "✅ Already unlocked!";
+    return;
+  }
 
-      if (team.unlocked[vault]) {
-        messageBox.style.color = "#00ff88";
-        messageBox.innerText = "✅ Already unlocked!";
-        return;
-      }
+  if (team.attempts[vault] <= 0) {
+    messageBox.style.color = "#ff4d4d";
+    messageBox.innerText = "🚫 No attempts left!";
+    return;
+  }
 
-      if (team.attempts[vault] <= 0) {
-        messageBox.style.color = "#ff4d4d";
-        messageBox.innerText = "🚫 No attempts left!";
-        return;
-      }
+  if (input === correctCodes[vault]) {
+    team.unlocked[vault] = true;
+    messageBox.style.color = "#00ff88";
+    messageBox.innerText = "✅ Vault unlocked!";
+    team.history.push(`✅ ${vault.toUpperCase()} Vault unlocked`);
+  } else {
+    team.attempts[vault] -= 1;
+    messageBox.style.color = "#ff4d4d";
+    messageBox.innerText = `❌ Incorrect! Attempts left: ${team.attempts[vault]}`;
+    team.history.push(`❌ Tried ${vault.toUpperCase()} Vault`);
+  }
+
+  inputField.value = "";
+  inputField.style.display = "none";
+  unlockBtn.style.display = "none";
+
+  // Show Try Again only if they have more attempts and haven’t unlocked
+  if (!team.unlocked[vault] && team.attempts[vault] > 0) {
+    tryAgainBtn.style.display = "inline-block";
+  }
+
+  localStorage.setItem("vaultGameState", JSON.stringify(gameState));
+  updateVaultStatus();
+}
+
+    function tryAgain(vault) {
+  document.getElementById(`input-${vault}`).style.display = "inline-block";
+  document.getElementById(`unlock-btn-${vault}`).style.display = "inline-block";
+  document.getElementById(`try-again-${vault}`).style.display = "none";
+  document.getElementById(`message-${vault}`).innerText = "";
+}
+
 
       if (input === correctCodes[vault]) {
         team.unlocked[vault] = true;
